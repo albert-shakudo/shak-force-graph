@@ -1,5 +1,9 @@
 <head>
-  <style> body { margin: 0; } </style>
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
 
   <script src="//unpkg.com/force-graph"></script>
   <!--<script src="../../dist/force-graph.js"></script>-->
@@ -9,22 +13,52 @@
   <div id="graph"></div>
 
   <script>
-    const imgs = ['cat.jpg', 'dog.jpg', 'eagle.jpg', 'elephant.jpg', 'grasshopper.jpg', 'octopus.jpg', 'owl.jpg', 'panda.jpg', 'squirrel.jpg', 'tiger.jpg', 'whale.jpg']
-      .map(src => {
-        const img = new Image();
-        img.src = `./imgs/${src}`;
-        return img;
-      });
+    const imgs = [
+      'airbyte.png',
+      'dbt.png',
+      'mlflow.png',
+      's3.png',
+      'snowflake.png',
+      'spark.png',
+      'streamlit.png',
+      'superset.png',
+      'tensorflow-serving.png',
+      'tensorflow.png'
+    ].map(src => {
+      const img = new Image();
+      img.src = `./stack-components/${src}`;
+      return img;
+    });
 
-    // Random connected graph
+    // Define a map of image name to its index for easier referencing
+    const imgIndex = {
+      'airbyte.png': 0,
+      'dbt.png': 1,
+      'mlflow.png': 2,
+      's3.png': 3,
+      'snowflake.png': 4,
+      'spark.png': 5,
+      'streamlit.png': 6,
+      'superset.png': 7,
+      'tensorflow-serving.png': 8,
+      'tensorflow.png': 9
+    };
+
     const gData = {
       nodes: imgs.map((img, id) => ({ id, img })),
-      links: [...Array(imgs.length).keys()]
-        .filter(id => id)
-        .map(id => ({
-          source: id,
-          target: Math.round(Math.random() * (id-1))
-        }))
+      links: [
+        { source: imgIndex['airbyte.png'], target: imgIndex['snowflake.png'] },
+        { source: imgIndex['snowflake.png'], target: imgIndex['dbt.png'] },
+        { source: imgIndex['spark.png'], target: imgIndex['dbt.png'] },
+        { source: imgIndex['spark.png'], target: imgIndex['tensorflow.png'] },
+        { source: imgIndex['snowflake.png'], target: imgIndex['tensorflow.png'] },
+        { source: imgIndex['tensorflow.png'], target: imgIndex['mlflow.png'] },
+        { source: imgIndex['tensorflow.png'], target: imgIndex['snowflake.png'] },
+        { source: imgIndex['tensorflow.png'], target: imgIndex['streamlit.png'] },
+        { source: imgIndex['snowflake.png'], target: imgIndex['superset.png'] },
+        { source: imgIndex['s3.png'], target: imgIndex['mlflow.png'] },
+        { source: imgIndex['tensorflow-serving.png'], target: imgIndex['s3.png'] }
+      ]
     };
 
     const Graph = ForceGraph()
@@ -38,6 +72,10 @@
         ctx.fillStyle = color;
         ctx.fillRect(node.x - size / 2, node.y - size / 2, size, size); // draw square as pointer trap
       })
+      .linkDirectionalParticles(4)
+      .linkDirectionalParticleSpeed(0.01)
+      .linkDirectionalParticleWidth(3)
+      .linkDirectionalParticleColor(link => "#D9D9D9")
       .graphData(gData);
   </script>
 </body>
