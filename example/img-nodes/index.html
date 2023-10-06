@@ -4,78 +4,72 @@
       margin: 0;
     }
   </style>
-
   <script src="//unpkg.com/force-graph"></script>
-  <!--<script src="../../dist/force-graph.js"></script>-->
 </head>
 
 <body>
   <div id="graph"></div>
 
   <script>
-    const imgs = [
-      'airbyte.png',
-      'dbt.png',
-      'mlflow.png',
-      's3.png',
-      'snowflake.png',
-      'spark.png',
-      'streamlit.png',
-      'superset.png',
-      'tensorflow-serving.png',
-      'tensorflow.png'
-    ].map(src => {
-      const img = new Image();
-      img.src = `./stack-components/${src}`;
-      return img;
-    });
+    function formatLabel(imgName) {
+      const baseName = imgName.split('.')[0];
+      return baseName.charAt(0).toUpperCase() + baseName.slice(1);
+    }
 
-    // Define a map of image name to its index for easier referencing
-    const imgIndex = {
-      'airbyte.png': 0,
-      'dbt.png': 1,
-      'mlflow.png': 2,
-      's3.png': 3,
-      'snowflake.png': 4,
-      'spark.png': 5,
-      'streamlit.png': 6,
-      'superset.png': 7,
-      'tensorflow-serving.png': 8,
-      'tensorflow.png': 9
-    };
+    fetch('./graph-data.json')
+      .then(res => res.json())
+      .then(data => {
+        // Load images
+        let currentId = data.nodes.length;
+        data.nodes.forEach((node, idx) => {  // Corrected syntax error here
+          const img = new Image();
+          img.src = node.img;
+          node.imgObj = img; // Store the image object in the node
+          node.label = formatLabel(img.src.split('/').pop()); // Set the label
+          for (let i = 0; i < node.smallNodes; i++) {
+            data.nodes.push({
+              id: `small-${currentId++}`,
+              type: "small"
+            });
+            data.links.push({
+              target: node.id,
+              source: `small-${currentId - 1}`
+            });
+          }
+        });
 
-    const gData = {
-      nodes: imgs.map((img, id) => ({ id, img })),
-      links: [
-        { source: imgIndex['airbyte.png'], target: imgIndex['snowflake.png'] },
-        { source: imgIndex['snowflake.png'], target: imgIndex['dbt.png'] },
-        { source: imgIndex['spark.png'], target: imgIndex['dbt.png'] },
-        { source: imgIndex['spark.png'], target: imgIndex['tensorflow.png'] },
-        { source: imgIndex['snowflake.png'], target: imgIndex['tensorflow.png'] },
-        { source: imgIndex['tensorflow.png'], target: imgIndex['mlflow.png'] },
-        { source: imgIndex['tensorflow.png'], target: imgIndex['snowflake.png'] },
-        { source: imgIndex['tensorflow.png'], target: imgIndex['streamlit.png'] },
-        { source: imgIndex['snowflake.png'], target: imgIndex['superset.png'] },
-        { source: imgIndex['s3.png'], target: imgIndex['mlflow.png'] },
-        { source: imgIndex['tensorflow-serving.png'], target: imgIndex['s3.png'] }
-      ]
-    };
-
-    const Graph = ForceGraph()
-      (document.getElementById('graph'))
-      .nodeCanvasObject(({ img, x, y }, ctx) => {
-        const size = 12;
-        ctx.drawImage(img, x - size / 2, y - size / 2, size, size);
-      })
-      .nodePointerAreaPaint((node, color, ctx) => {
-        const size = 12;
-        ctx.fillStyle = color;
-        ctx.fillRect(node.x - size / 2, node.y - size / 2, size, size); // draw square as pointer trap
-      })
-      .linkDirectionalParticles(4)
-      .linkDirectionalParticleSpeed(0.01)
-      .linkDirectionalParticleWidth(3)
-      .linkDirectionalParticleColor(link => "#D9D9D9")
-      .graphData(gData);
+        // Create the graph
+        const Graph = ForceGraph()
+          (document.getElementById('graph'))
+          .graphData(data)
+          .nodeId('id')
+        Graph.d3Force('link').distance(15);  // Adjust the link distance separately
+        Graph.d3Force('charge').strength(-20);  // Adjust the charge force to bring nodes closer
+          
+        Graph
+          .nodeCanvasObject(({ type, imgObj, x, y, label }, ctx) => {
+            if (type === "image") {
+              const size = 12;
+              ctx.drawImage(imgObj, x - size / 2, y - size / 2, size, size);
+            } else if (type === "small") {
+              ctx.beginPath();
+              ctx.arc(x, y, 2, 0, 2 * Math.PI, false);
+              ctx.fillStyle = "#D9D9D9";
+              ctx.fill();
+            }
+          })
+          .nodeLabel('label')
+          .linkDirectionalParticles(4)
+          .linkDirectionalParticleSpeed(0.01)
+          .linkDirectionalParticleWidth(3)
+          .linkDirectionalParticleColor(link => "#D9D9D9")
+          .linkSource('source')
+          .linkTarget('target')
+          .onNodeClick(node => {
+            // Center/zoom on node
+            Graph.centerAt(node.x, node.y, 1000)
+            Graph.zoom(4, 2000)
+          });
+      });
   </script>
 </body>

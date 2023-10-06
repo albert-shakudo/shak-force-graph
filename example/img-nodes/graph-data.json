@@ -1,0 +1,110 @@
+{
+    "nodes": [
+        {
+            "id": "airbyte",
+            "img": "./stack-components/airbyte.png",
+            "type": "image",
+            "smallNodes": 9
+        },
+        {
+            "id": "dbt",
+            "img": "./stack-components/dbt.png",
+            "type": "image",
+            "smallNodes": 6
+        },
+        {
+            "id": "mlflow",
+            "img": "./stack-components/mlflow.png",
+            "type": "image",
+            "smallNodes": 8
+        },
+        {
+            "id": "s3",
+            "img": "./stack-components/s3.png",
+            "type": "image",
+            "smallNodes": 7
+        },
+        {
+            "id": "snowflake",
+            "img": "./stack-components/snowflake.png",
+            "type": "image",
+            "smallNodes": 0
+        },
+        {
+            "id": "spark",
+            "img": "./stack-components/spark.png",
+            "type": "image",
+            "smallNodes": 6
+        },
+        {
+            "id": "streamlit",
+            "img": "./stack-components/streamlit.png",
+            "type": "image",
+            "smallNodes": 1
+        },
+        {
+            "id": "superset",
+            "img": "./stack-components/superset.png",
+            "type": "image",
+            "smallNodes": 5
+        },
+        {
+            "id": "tensorflow-serving",
+            "img": "./stack-components/tensorflow-serving.png",
+            "type": "image",
+            "smallNodes": 3
+        },
+        {
+            "id": "tensorflow",
+            "img": "./stack-components/tensorflow.png",
+            "type": "image",
+            "smallNodes": 8
+        }
+    ],
+    "links": [
+        {
+            "source": "airbyte",
+            "target": "snowflake"
+        },
+        {
+            "source": "snowflake",
+            "target": "dbt"
+        },
+        {
+            "source": "spark",
+            "target": "dbt"
+        },
+        {
+            "source": "spark",
+            "target": "tensorflow"
+        },
+        {
+            "source": "snowflake",
+            "target": "tensorflow"
+        },
+        {
+            "source": "tensorflow",
+            "target": "snowflake"
+        },
+        {
+            "source": "tensorflow",
+            "target": "mlflow"
+        },
+        {
+            "source": "tensorflow",
+            "target": "streamlit"
+        },
+        {
+            "source": "snowflake",
+            "target": "superset"
+        },
+        {
+            "source": "s3",
+            "target": "mlflow"
+        },
+        {
+            "source": "tensorflow-serving",
+            "target": "s3"
+        }
+    ]
+}
