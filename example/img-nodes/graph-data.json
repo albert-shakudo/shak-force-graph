@@ -99,12 +99,12 @@
             "target": "superset"
         },
         {
-            "source": "s3",
-            "target": "mlflow"
+            "source": "mlflow",
+            "target": "s3"
         },
         {
-            "source": "tensorflow-serving",
-            "target": "s3"
+            "source": "s3",
+            "target": "tensorflow-serving"
         }
     ]
 }

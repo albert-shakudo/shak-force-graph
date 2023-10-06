@@ -44,7 +44,7 @@
           .graphData(data)
           .nodeId('id')
         Graph.d3Force('link').distance(15);  // Adjust the link distance separately
-        Graph.d3Force('charge').strength(-20);  // Adjust the charge force to bring nodes closer
+        Graph.d3Force('charge').strength(-10);  // Adjust the charge force to bring nodes closer
           
         Graph
           .nodeCanvasObject(({ type, imgObj, x, y, label }, ctx) => {
@@ -53,7 +53,7 @@
               ctx.drawImage(imgObj, x - size / 2, y - size / 2, size, size);
             } else if (type === "small") {
               ctx.beginPath();
-              ctx.arc(x, y, 2, 0, 2 * Math.PI, false);
+              ctx.arc(x, y, 1.5, 0, 2 * Math.PI, false);
               ctx.fillStyle = "#D9D9D9";
               ctx.fill();
             }
