@@ -45,7 +45,8 @@
           .nodeId('id')
         Graph.d3Force('link').distance(15);  // Adjust the link distance separately
         Graph.d3Force('charge').strength(-10);  // Adjust the charge force to bring nodes closer
-          
+        Graph.cooldownTime(1000);
+        Graph.onEngineStop(() => Graph.zoomToFit(1000,30));
         Graph
           .nodeCanvasObject(({ type, imgObj, x, y, label }, ctx) => {
             if (type === "image") {
@@ -68,7 +69,7 @@
           .onNodeClick(node => {
             // Center/zoom on node
             Graph.centerAt(node.x, node.y, 1000)
-            Graph.zoom(4, 2000)
+            Graph.zoom(10, 2000)
           });
       });
   </script>
