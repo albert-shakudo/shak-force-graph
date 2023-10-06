@@ -1,0 +1,9 @@
+{
+    "redirects": [
+        {
+            "source": "/",
+            "destination": "/example/img-nodes/index.html",
+            "permanent": true
+        }
+    ]
+}
